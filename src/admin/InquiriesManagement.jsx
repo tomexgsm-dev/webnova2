@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Mail, Trash2, Search, CheckCircle, Circle, RefreshCw, Loader2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
@@ -24,13 +23,13 @@ const InquiriesManagement = () => {
   const handleToggleRead = async (id, currentReadStatus) => {
     const result = await toggleReadStatus(id, currentReadStatus);
     if (result.success) {
-      setInquiries(inquiries.map(inq => 
+      setInquiries(inquiries.map(inq =>
         inq.id === id ? { ...inq, read: !inq.read } : inq
       ));
     } else {
-      toast({ 
-        variant: "destructive", 
-        description: "Failed to update status." 
+      toast({
+        variant: "destructive",
+        description: "Failed to update status."
       });
     }
   };
@@ -43,19 +42,25 @@ const InquiriesManagement = () => {
   };
 
   const filteredInquiries = inquiries.filter(inq => {
-    const matchesSearch = (inq.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          (inq.email || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      (inq.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (inq.email || '').toLowerCase().includes(searchTerm.toLowerCase());
+
     const matchesFilter = filter === 'all' ? true : !inq.read;
+
     return matchesSearch && matchesFilter;
   });
 
   return (
     <div className="space-y-6">
+
+      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-white font-sora">Inquiries</h1>
           <p className="text-slate-400 mt-1">Manage customer messages and leads</p>
         </div>
+
         <div className="flex gap-2 items-center">
           <Button
             variant="ghost"
@@ -65,14 +70,16 @@ const InquiriesManagement = () => {
           >
             <RefreshCw size={20} className={hookLoading ? 'animate-spin' : ''} />
           </Button>
-          <Button 
+
+          <Button
             variant={filter === 'all' ? 'default' : 'outline'}
             onClick={() => setFilter('all')}
             className={filter === 'all' ? 'bg-blue-600' : 'border-slate-700 text-slate-300'}
           >
             All
           </Button>
-          <Button 
+
+          <Button
             variant={filter === 'unread' ? 'default' : 'outline'}
             onClick={() => setFilter('unread')}
             className={filter === 'unread' ? 'bg-blue-600' : 'border-slate-700 text-slate-300'}
@@ -82,11 +89,14 @@ const InquiriesManagement = () => {
         </div>
       </div>
 
+      {/* Search + List */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+
+        {/* Search Bar */}
         <div className="p-4 border-b border-slate-800 flex gap-4">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4" />
-            <input 
+            <input
               type="text"
               placeholder="Search by name or email..."
               value={searchTerm}
@@ -96,52 +106,66 @@ const InquiriesManagement = () => {
           </div>
         </div>
 
+        {/* Messages */}
         <div className="divide-y divide-slate-800">
+
+          {/* Loading State */}
           {hookLoading && inquiries.length === 0 ? (
-             <div className="p-12 text-center text-slate-500">
-               <Loader2 className="w-8 h-8 mx-auto animate-spin mb-2" />
-               <p>Loading messages...</p>
-             </div>
+            <div className="p-12 text-center text-slate-500">
+              <Loader2 className="w-8 h-8 mx-auto animate-spin mb-2" />
+              <p>Loading messages...</p>
+            </div>
           ) : filteredInquiries.length > 0 ? (
+
             filteredInquiries.map((inquiry) => (
-              <div 
-                key={inquiry.id} 
+              <div
+                key={inquiry.id}
                 className={`p-6 hover:bg-slate-800/50 transition-colors flex flex-col md:flex-row gap-4 justify-between items-start md:items-center ${!inquiry.read ? 'bg-blue-900/10' : ''}`}
               >
                 <div className="flex-1 min-w-0">
+
                   <div className="flex items-center gap-2 mb-1">
                     <h3 className={`font-medium text-white truncate ${!inquiry.read ? 'font-bold' : ''}`}>
                       {inquiry.name}
                     </h3>
+
                     {!inquiry.read && (
                       <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-500 text-white">
                         New
                       </span>
                     )}
+
                     {inquiry.project_type && (
                       <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-700 text-slate-300">
                         {inquiry.project_type}
                       </span>
                     )}
-                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${inquiry.status === 'sent' ? 'border-green-800 text-green-400' : 'border-yellow-800 text-yellow-400'}`}>
-                        {inquiry.status || 'pending'}
-                      </span>
+
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${inquiry.status === 'sent'
+                      ? 'border-green-800 text-green-400'
+                      : 'border-yellow-800 text-yellow-400'
+                      }`}>
+                      {inquiry.status || 'pending'}
+                    </span>
                   </div>
+
                   <p className="text-sm text-slate-400 mb-2">{inquiry.email}</p>
                   <p className="text-slate-300 text-sm line-clamp-2">{inquiry.message}</p>
                 </div>
-                
+
                 <div className="flex items-center gap-4 text-sm text-slate-500 whitespace-nowrap">
                   <span>{new Date(inquiry.created_at).toLocaleDateString()}</span>
+
                   <div className="flex items-center gap-2">
-                    <button 
+                    <button
                       onClick={() => handleToggleRead(inquiry.id, inquiry.read)}
-                      className="p-2 hover:bg-slate-700 rounded-full transition-colors tooltip"
+                      className="p-2 hover:bg-slate-700 rounded-full transition-colors"
                       title={inquiry.read ? "Mark as unread" : "Mark as read"}
                     >
                       {inquiry.read ? <Circle size={18} /> : <CheckCircle size={18} className="text-blue-500" />}
                     </button>
-                    <button 
+
+                    <button
                       onClick={() => handleDelete(inquiry.id)}
                       className="p-2 hover:bg-red-900/30 hover:text-red-400 rounded-full transition-colors"
                       title="Delete"
@@ -152,12 +176,14 @@ const InquiriesManagement = () => {
                 </div>
               </div>
             ))
+
           ) : (
             <div className="p-12 text-center text-slate-500">
               <Mail className="w-12 h-12 mx-auto mb-4 opacity-20" />
               <p>No inquiries found.</p>
             </div>
           )}
+
         </div>
       </div>
     </div>
