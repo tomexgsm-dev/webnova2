@@ -20,12 +20,10 @@ const ServicesManagement = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Load from localStorage (simulating DB fetch)
     const storedServices = localStorage.getItem('services');
     if (storedServices) {
       setServices(JSON.parse(storedServices));
     } else {
-      // Seed initial data
       localStorage.setItem('services', JSON.stringify(INITIAL_SERVICES));
       setServices(INITIAL_SERVICES);
     }
@@ -33,6 +31,7 @@ const ServicesManagement = () => {
 
   const handleSaveService = (serviceData) => {
     let updatedServices;
+
     if (editingService) {
       updatedServices = services.map(s => s.id === serviceData.id ? serviceData : s);
       toast({ title: "Service Updated", description: `${serviceData.name} has been updated.` });
@@ -40,7 +39,7 @@ const ServicesManagement = () => {
       updatedServices = [...services, serviceData];
       toast({ title: "Service Created", description: `${serviceData.name} has been added.` });
     }
-    
+
     setServices(updatedServices);
     localStorage.setItem('services', JSON.stringify(updatedServices));
     setEditingService(null);
@@ -66,28 +65,34 @@ const ServicesManagement = () => {
     setIsModalOpen(true);
   };
 
-  const filteredServices = services.filter(s => 
+  const filteredServices = services.filter(s =>
     s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="space-y-6">
+
+      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-white font-sora">Services Management</h1>
           <p className="text-slate-400 mt-1">Manage your service offerings and pricing</p>
         </div>
+
         <Button onClick={openCreateModal} className="bg-blue-600 hover:bg-blue-700 text-white">
           <Plus className="w-4 h-4 mr-2" /> Add New Service
         </Button>
       </div>
 
+      {/* Table */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+
+        {/* Search */}
         <div className="p-4 border-b border-slate-800 flex gap-4">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4" />
-            <input 
+            <input
               type="text"
               placeholder="Search services..."
               value={searchTerm}
@@ -97,6 +102,7 @@ const ServicesManagement = () => {
           </div>
         </div>
 
+        {/* Services List */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="bg-slate-950 text-slate-400 uppercase text-xs font-semibold">
@@ -107,25 +113,32 @@ const ServicesManagement = () => {
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
+
             <tbody className="divide-y divide-slate-800">
               {filteredServices.length > 0 ? (
                 filteredServices.map((service) => (
                   <tr key={service.id} className="hover:bg-slate-800/50 transition-colors">
                     <td className="px-6 py-4 font-medium text-white">{service.name}</td>
+
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-900/50 text-blue-300 border border-blue-800">
                         {service.category}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-slate-300">{Number(service.price).toLocaleString()} PLN</td>
+
+                    <td className="px-6 py-4 text-slate-300">
+                      {Number(service.price).toLocaleString()} PLN
+                    </td>
+
                     <td className="px-6 py-4 text-right space-x-2">
-                      <button 
+                      <button
                         onClick={() => openEditModal(service)}
                         className="p-2 text-slate-400 hover:text-blue-400 hover:bg-blue-900/20 rounded-lg transition-colors"
                       >
                         <Pencil size={16} />
                       </button>
-                      <button 
+
+                      <button
                         onClick={() => handleDelete(service.id)}
                         className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-colors"
                       >
@@ -145,13 +158,15 @@ const ServicesManagement = () => {
                 </tr>
               )}
             </tbody>
+
           </table>
         </div>
       </div>
 
+      {/* Modal */}
       {isModalOpen && (
-        <ServiceForm 
-          service={editingService} 
+        <ServiceForm
+          service={editingService}
           onClose={() => setIsModalOpen(false)}
           onSave={handleSaveService}
         />
