@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -41,7 +40,6 @@ const AdminLoginPage = () => {
   };
 
   return (
-    // Cleaned background to allow Global AnimatedBackground to show through
     <div className="min-h-screen flex items-center justify-center bg-transparent px-4 relative overflow-hidden">
       
       <motion.div 
